@@ -156,6 +156,7 @@ fn shown_text(ui: &Ui, rect: Rect, id: &str, text: &str) {
 /// accessible selected state.
 fn labeled(ui: &mut Ui, icon: Icon, label: &str, on: bool) -> egui::Response {
     let t = Tokens::get(ui.ctx());
+    let label = crate::i18n_ko::tr(label);
     let w = 22.0 + ui.fonts_mut(|f| f.layout_no_wrap(label.into(), theme::font(12.0), t.text).size().x) + 8.0;
     let (r, resp) = ui.allocate_exact_size(vec2(w, 20.0), Sense::click());
     if on || resp.hovered() {

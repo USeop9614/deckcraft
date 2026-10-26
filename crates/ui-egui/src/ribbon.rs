@@ -172,7 +172,7 @@ pub fn show(app: &mut SlideApp, ui: &mut Ui) {
         let mut x = rect.min.x + 12.0;
         let y = rect.min.y + 2.0;
         {
-            let w = ui.fonts_mut(|f| f.layout_no_wrap("File".to_string(), theme::font(13.0), t.text).size().x) + 18.0;
+            let w = ui.fonts_mut(|f| f.layout_no_wrap(crate::i18n_ko::tr("File").to_string(), theme::font(13.0), t.text).size().x) + 18.0;
             let r = Rect::from_min_size(pos2(x, y), vec2(w, 24.0));
             let resp = ui.interact(r, ui.scope_id().with("tab_file"), Sense::click());
             resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, "File"));
@@ -188,7 +188,7 @@ pub fn show(app: &mut SlideApp, ui: &mut Ui) {
         let all: Vec<(&str, bool)> = TABS.iter().map(|s| (*s, false)).chain(ctx_tabs.iter().map(|s| (*s, true))).collect();
         for (name, contextual) in all {
             let font = theme::font(13.0);
-            let w = ui.fonts_mut(|f| f.layout_no_wrap(name.to_string(), font.clone(), t.text).size().x) + 18.0;
+            let w = ui.fonts_mut(|f| f.layout_no_wrap(crate::i18n_ko::tr(name).to_string(), font.clone(), t.text).size().x) + 18.0;
             let r = Rect::from_min_size(pos2(x, y), vec2(w, 24.0));
             let resp = ui.interact(r, ui.scope_id().with(("tab", name)), Sense::click());
             resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, name));

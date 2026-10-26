@@ -187,6 +187,8 @@ fn main() -> eframe::Result {
     // First, so every start-up record (and the engine's panic hook, installed with the first
     // Session) is captured; see `logging`.
     let logger = logging::install();
+    // Korean patch: show the interface in Korean (DECKCRAFT_LANG=en keeps English).
+    deckcraft_ui_egui::i18n_ko::install();
     if let Some(done) = craft_update::self_update::finish(&craft_update::suite::DECKCRAFT, &std::env::args_os().skip(1).collect::<Vec<_>>()) {
         if let Err(e) = done {
             eprintln!("DeckCraft update helper failed: {e}");

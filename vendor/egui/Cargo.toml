@@ -1,0 +1,123 @@
+[package]
+name = "egui"
+version = "0.37.0"
+authors = ["Emil Ernerfeldt <emil.ernerfeldt@gmail.com>"]
+description = "An easy-to-use immediate mode GUI that runs on both web and native"
+edition = "2024"
+rust-version = "1.95"
+homepage = "https://github.com/emilk/egui"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/emilk/egui"
+categories = ["gui", "game-development"]
+keywords = ["gui", "imgui", "immediate", "portable", "gamedev"]
+include = ["LICENSE-APACHE", "LICENSE-MIT", "**/*.rs", "Cargo.toml"]
+
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--generate-link-to-definition"]
+targets = ["x86_64-unknown-linux-gnu", "wasm32-unknown-unknown"]
+
+[lib]
+
+
+[features]
+default = []
+
+## [`bytemuck`](https://docs.rs/bytemuck) enables you to cast [`epaint::Vertex`], [`emath::Vec2`] etc to `&[u8]`.
+bytemuck = ["epaint/bytemuck"]
+
+## Show a debug-ui on hover including the stacktrace to the hovered item.
+## This is very useful in finding the code that creates a part of the UI.
+## Does not work on web.
+callstack = ["dep:backtrace"]
+
+## [`cint`](https://docs.rs/cint) enables interoperability with other color libraries.
+cint = ["epaint/cint"]
+
+## Enable the [`hex_color`] macro.
+color-hex = ["epaint/color-hex"]
+
+## If set, egui will use `include_bytes!` to bundle some fonts.
+##
+## This is off by default, because only the application should decide whether to pay for the
+## bundled fonts. `eframe` enables it by default; an integration that is not `eframe` must
+## either enable it, or install a [`FontProvider`] of its own.
+default_fonts = ["epaint/default_fonts"]
+
+## Enable experimental egui features that might have massive breaking changes or be removed entirely in future updates.
+## Enabling this won't break semver, it's just future compatibility risk.
+##
+## Currently, this enables the theme plugin.
+experimental = []
+
+## [`mint`](https://docs.rs/mint) enables interoperability with other math libraries such as [`glam`](https://docs.rs/glam) and [`nalgebra`](https://docs.rs/nalgebra).
+mint = ["epaint/mint"]
+
+## Bundle the monochrome emoji fonts `NotoEmoji-Regular` and `emoji-icon-font`,
+## and put them in the default [`FontDefinitions`].
+##
+## They add about 1 MB to the binary, and are only needed if you want the same
+## (monochrome) emoji on every platform, instead of the platform's own color emoji
+## (see [`GlyphRasterizer`] and [`FontProvider`]).
+monochrome_emoji_fonts = ["default_fonts", "epaint/monochrome_emoji_fonts"]
+
+## Enable persistence of memory (window positions etc).
+persistence = ["serde", "epaint/serde", "ron"]
+
+
+## Enable parallel tessellation using [`rayon`](https://docs.rs/rayon).
+##
+## This can help performance for graphics-intense applications.
+rayon = ["epaint/rayon"]
+
+## Allow serialization using [`serde`](https://docs.rs/serde).
+serde = ["dep:serde", "epaint/serde", "accesskit/serde"]
+
+## Change Vertex layout to be compatible with unity
+unity = ["epaint/unity"]
+
+## Expose `DroppedFile::web_file`, the browser `File` handle of a dropped file (wasm32 only).
+##
+## This pulls in `web-sys`, and with it `js-sys` and `wasm-bindgen`, which add `wasm-bindgen`
+## symbols to the final binary. Integrations that are not `wasm-bindgen`-based can leave it off.
+## `eframe` enables it on the web.
+web_file = ["dep:web-sys"]
+
+## Override and disable the unity feature
+## This exists, so that when testing with --all-features, snapshots render correctly.
+_override_unity = ["epaint/_override_unity"]
+
+
+[dependencies]
+emath = { git = "https://github.com/storytold/egui.git", rev = "6d518fc799681571963842f95b55a6b68431b15a", default-features = false }
+epaint = { git = "https://github.com/storytold/egui.git", rev = "6d518fc799681571963842f95b55a6b68431b15a", default-features = false }
+
+accesskit = "0.25.0"
+ahash = { version = "0.8.12", default-features = false, features = ["no-rng", "std"] }
+bitflags = "2.13"
+itertools = "0.15.0"
+log = { version = "0.4.34", features = ["std"] }
+nohash-hasher = "0.2.0"
+profiling = { version = "1.0", default-features = false }
+smallvec = "1.16"
+unicode-segmentation = "1.13"
+
+#! ### Optional dependencies
+
+backtrace = { version = "0.3.76", optional = true }
+
+## Enable this when generating docs.
+document-features = { version = "0.2.12", optional = true }
+
+ron = { version = "0.12.2", optional = true }
+serde = { version = "1.0", optional = true, features = ["derive", "rc"] }
+
+
+# web:
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+# For `DroppedFile::web_file`, which hands web apps a file handle instead of its contents.
+web-sys = { version = "0.3.103", optional = true, features = ["File"] }
+
+[dev-dependencies]
+skrifa = { version = "0.44.0", default-features = false, features = ["std", "autohint_shaping"] }

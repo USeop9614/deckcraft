@@ -1,0 +1,77 @@
+# Korean patch (USeop9614/deckcraft): build an unsigned Windows x64 DeckCraft with the Korean
+# interface and publish it as a GitHub release (and a workflow artifact).
+name: Korean Windows build
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: korean-windows-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Same craft-fonts commit the official release uses (release.yml).
+  CRAFT_FONTS_REF: 37827adc41fd165f9a9234ac40f94dbad353aa69
+  CARGO_TERM_COLOR: always
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check out craft-fonts
+        uses: actions/checkout@v4
+        with:
+          repository: storytold/craft-fonts
+          ref: ${{ env.CRAFT_FONTS_REF }}
+          path: craft-fonts
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Build deckcraft.exe
+        shell: bash
+        env:
+          CRAFT_FONTS_DIR: ${{ github.workspace }}/craft-fonts
+        run: cargo build --release --locked -p deckcraft
+
+      - name: Package
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path dist/DeckCraft-ko | Out-Null
+          Copy-Item target/release/deckcraft.exe dist/DeckCraft-ko/DeckCraft.exe
+          Copy-Item LICENSE-MIT, LICENSE-APACHE, NOTICE dist/DeckCraft-ko/
+          @"
+          DeckCraft 한국어 패치 빌드 (비공식, 서명 없음)
+
+          DeckCraft.exe 를 실행하면 됩니다. 설치는 필요 없습니다.
+          처음 실행할 때 Windows가 '알 수 없는 게시자' 경고를 띄우면 [추가 정보] -> [실행]을 누르세요.
+          영어로 쓰려면 환경 변수 DECKCRAFT_LANG=en 을 설정하세요.
+
+          원본: https://github.com/storytold/deckcraft
+          패치: https://github.com/${{ github.repository }}
+          "@ | Out-File -Encoding utf8 dist/DeckCraft-ko/README-ko.txt
+          Compress-Archive -Path dist/DeckCraft-ko -DestinationPath dist/DeckCraft-ko-windows-x64.zip -Force
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DeckCraft-ko-windows-x64
+          path: dist/DeckCraft-ko-windows-x64.zip
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ko-build-${{ github.run_number }}
+          name: DeckCraft 한국어 빌드 ${{ github.run_number }}
+          body: |
+            DeckCraft 한국어 인터페이스 패치 빌드 (Windows x64, 서명 없음).
+            아래 DeckCraft-ko-windows-x64.zip 을 받아 압축을 풀고 DeckCraft.exe 를 실행하세요.
+          files: dist/DeckCraft-ko-windows-x64.zip

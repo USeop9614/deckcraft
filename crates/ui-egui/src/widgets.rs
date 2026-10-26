@@ -51,6 +51,7 @@ fn big_button_width(text_w: f32, split: bool) -> f32 {
 pub fn big_button_ex(ui: &mut Ui, icon: Icon, label: &str, enabled: bool, split: bool, selected: bool) -> (Response, Option<Response>) {
     let t = Tokens::get(ui.ctx());
     let font = theme::font(11.0);
+    let label = crate::i18n_ko::tr(label);
     let lines: Vec<&str> = wrap_label(label);
     let text_w = lines.iter().map(|l| ui.fonts_mut(|f| f.layout_no_wrap(l.to_string(), font.clone(), t.text).size().x)).fold(0.0f32, f32::max);
     let w = big_button_width(text_w, split);
@@ -150,6 +151,7 @@ pub fn small_button_named(
 ) -> (Response, Option<Response>) {
     let t = Tokens::get(ui.ctx());
     let font = theme::font(12.0);
+    let label = crate::i18n_ko::tr(label);
     let tw = if label.is_empty() { 0.0 } else { ui.fonts_mut(|f| f.layout_no_wrap(label.to_string(), font.clone(), t.text).size().x) + 5.0 };
     let arrow_w = if split { 12.0 } else { 0.0 };
     let w = 24.0 + tw + arrow_w;
@@ -246,6 +248,7 @@ fn split_popup_id(main: &Response) -> egui::Id {
 pub fn check_item(ui: &mut Ui, label: &str, enabled: bool, on: bool) -> Response {
     let t = Tokens::get(ui.ctx());
     let font = theme::font(12.0);
+    let label = crate::i18n_ko::tr(label);
     let tw = ui.fonts_mut(|f| f.layout_no_wrap(label.to_string(), font.clone(), t.text).size().x) + 5.0;
     let (rect, resp) = ui.allocate_exact_size(vec2(24.0 + tw, 22.0), if enabled { Sense::click() } else { Sense::hover() });
     resp.widget_info(|| egui::WidgetInfo::selected(egui::Role::CheckBox, enabled, on, label));

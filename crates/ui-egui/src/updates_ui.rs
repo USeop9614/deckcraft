@@ -21,6 +21,11 @@ impl Default for Runtime {
 }
 
 pub(crate) fn enable(app: &mut SlideApp) {
+    // Korean patch: an official update would replace this build with the English one, so the
+    // check at start-up stays off. Help › Check for Updates… still works.
+    if crate::i18n_ko::active() {
+        return;
+    }
     app.updates_rt.enabled = true;
 }
 

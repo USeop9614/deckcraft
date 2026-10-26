@@ -13,6 +13,7 @@ pub mod capture;
 pub mod control;
 pub mod credits;
 pub mod dialogs;
+pub mod i18n_ko;
 pub mod doc_window;
 pub mod eyedropper;
 pub mod fillui;
@@ -2164,6 +2165,10 @@ impl SlideApp {
                 .collect()
         });
         self.ui_fonts.note(ctx, &typed);
+        if let Some(text) = i18n_ko::take_font_text() {
+            // Korean patch: borrow a Hangul face for the translated interface, once.
+            self.ui_fonts.note(ctx, text);
+        }
         for d in self.session.documents() {
             self.ui_fonts.note(ctx, &d.title());
         }
